@@ -25,26 +25,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="Home" href="home">Home</a>
+                        <a class="nav-link active" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Adicionar User</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Todos Users</a>
+                        <a class="nav-link" href="{{route('bands.index')}}">Ver bandas</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Todas as Tarefas</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Prendas de Natal</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Adicionar Prenda</a>
-                </li>
+
                 @auth
                     <li class="nav-item">
                     <a class="nav-link" href="#">BackOffice</a>
@@ -69,14 +58,11 @@
                         >
                             Log in
                         </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('users.add') }}"
+                            <a href="{{ route('users.add') }}"
                                 class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
                                 Register
                             </a>
-                        @endif
+
                     @endauth
                 </nav>
             @endif

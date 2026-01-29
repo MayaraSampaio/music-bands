@@ -6,8 +6,9 @@ use App\Http\Controllers\BandController;
 
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
+
 
 //user routes
 //Add User
@@ -30,3 +31,5 @@ Route::put('/bands/{band}', [BandController::class, 'update'])->name('bands.upda
 Route::get('/bands/create', [BandController::class, 'create'])->name('bands.create')->middleware('auth');
 Route::post('/bands', [BandController::class, 'store'])->name('bands.store')->middleware('auth');
 Route::delete('/bands/{band}', [BandController::class, 'destroy'])->name('bands.destroy')->middleware('auth');
+
+//

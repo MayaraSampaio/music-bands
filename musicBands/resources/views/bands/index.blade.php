@@ -4,6 +4,11 @@
 
     <table class="table table-bordered">
         <thead>
+    @auth
+     @if(Auth::user()->user_type == \App\Models\User::TYPE_ADMIN)
+        <a href="{{ route('bands.create') }}" class="btn btn-success mb-3">+ Nova Banda</a>
+     @endif
+    @endauth
         <tr>
             <th>Foto</th>
             <th>Nome</th>
@@ -25,6 +30,18 @@
                 <td>{{ $band->albums_count }}</td>
                 <td>
                     <a class="btn btn-sm btn-primary" href="{{ route('bands.albums', $band) }}"> Ver álbuns</a>
+                @auth
+                    <a href="{{ route('bands.edit', $band) }}" class="btn btn-sm btn-warning">Editar</a>
+
+                    @if(Auth::user()->user_type == \App\Models\User::TYPE_ADMIN)
+                    <form action="{{ route('bands.destroy', $band) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Tens a certeza?')">Apagar</button>
+                    </form>
+                    @endif
+
+                @endauth
                 </td>
             </tr>
         @empty
