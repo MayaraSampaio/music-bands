@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BandController;
+use App\Http\Controllers\AlbumController;
 
 
 Route::get('/', function () {
@@ -33,3 +34,9 @@ Route::post('/bands', [BandController::class, 'store'])->name('bands.store')->mi
 Route::delete('/bands/{band}', [BandController::class, 'destroy'])->name('bands.destroy')->middleware('auth');
 
 //
+Route::get('/bands/{band}/albums/create', [AlbumController::class, 'create'])->name('albums.create')->middleware('auth');
+Route::post('/bands/{band}/albums', [AlbumController::class, 'store'])->name('albums.store')->middleware('auth');
+Route::delete('/album/{album}', [AlbumController::class, 'destroy'])->name('albums.destroy')->middleware('auth');
+
+Route::get('/albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');
+Route::put('/albums/{album}', [AlbumsController::class, 'update'])->name('albums.update')->middleware('auth');
