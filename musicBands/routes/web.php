@@ -36,7 +36,8 @@ Route::delete('/bands/{band}', [BandController::class, 'destroy'])->name('bands.
 //
 Route::get('/bands/{band}/albums/create', [AlbumController::class, 'create'])->name('albums.create')->middleware('auth');
 Route::post('/bands/{band}/albums', [AlbumController::class, 'store'])->name('albums.store')->middleware('auth');
-Route::delete('/album/{album}', [AlbumController::class, 'destroy'])->name('albums.destroy')->middleware('auth');
+
+Route::delete('/albums/{album}', [AlbumController::class, 'destroy'])->name('albums.destroy')->middleware('auth');
 
 Route::get('/albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit')->middleware('auth');
-Route::put('/albums/{album}', [AlbumsController::class, 'update'])->name('albums.update')->middleware('auth');
+Route::put('/albums/{album}', [AlbumController::class, 'update'])->name('albums.update')->middleware('auth');

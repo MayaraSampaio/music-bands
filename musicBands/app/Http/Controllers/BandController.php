@@ -11,6 +11,8 @@ use App\Models\User;
 class BandController extends Controller
 {
 
+private const DEFAULT_BAND_PHOTO = 'images/default-band.png';
+
 // função para listar as bandas com a contagem de albuns
 public function index()
 {
@@ -43,9 +45,14 @@ public function store(Request $request)
 
     if ($request->hasFile('photo')) {
         $data['photo'] = $request->file('photo')->store('bands', 'public');
+    } else {
+        $data['photo'] = self::DEFAULT_BAND_PHOTO;
     }
-    \App\Models\Band::create($data);
+
+    Band::create($data);
+
     return redirect()->route('bands.index')->with('success', 'Banda criada com sucesso!');
+
 }
 
 public function edit(\App\Models\Band $band)
@@ -61,22 +68,40 @@ public function update(Request $request,\App\Models\Band $band)
     ]);
 
     if ($request->hasFile('photo')) {
-        if ($band->photo) {
+        $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'photo' => 'nullable|image|max:2048',
+    ]);
+
+    if ($request->hasFile('photo')) {
+
+        // apaga foto antiga se for do storage (não apaga public/images)
+        if ($band->photo && !str_starts_with($band->photo, 'images/')) {
             Storage::disk('public')->delete($band->photo);
         }
+
         $data['photo'] = $request->file('photo')->store('bands', 'public');
+    } elseif (!$band->photo) {
+        // se por algum motivo estiver null, garante default
+        $data['photo'] = self::DEFAULT_BAND_PHOTO;
     }
+
     $band->update($data);
+
     return redirect()->route('bands.index')->with('success', 'Banda atualizada com sucesso!');
+}
 }
 public function destroy(\App\Models\Band $band)
 {
-    if ($band->photo) {
+    if ($band->photo && !str_starts_with($band->photo, 'images/')) {
         Storage::disk('public')->delete($band->photo);
     }
+
     $band->delete();
+
     return redirect()->route('bands.index')->with('success', 'Banda apagada!');
 }
+
 
 
 }

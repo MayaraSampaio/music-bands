@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Band;
 use App\Models\Album;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use App\Models\User;
 
 class AlbumController extends Controller
 {
+    private const DEFAULT_ALBUM_IMAGE = 'images/default-album.png';
+
     /**
      * Display a listing of the resource.
      */
@@ -18,7 +21,6 @@ class AlbumController extends Controller
     {
         $albums = $band->albums()->get();
         return view('bands.albums', compact('albums', 'band'));
-
     }
 
     /**
@@ -26,11 +28,10 @@ class AlbumController extends Controller
      */
     public function create(Band $band)
     {
-     if (Auth::user()->user_type != User::TYPE_ADMIN) {
-        abort(403);
-    }
-    return view('albums.create', compact('band'));
-
+        if (Auth::user()->user_type != User::TYPE_ADMIN) {
+            abort(403);
+        }
+        return view('albums.create', compact('band'));
     }
 
     /**
@@ -48,10 +49,14 @@ class AlbumController extends Controller
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('albums', 'public');
+        } else {
+            $data['image'] = self::DEFAULT_ALBUM_IMAGE; 
         }
 
-        \App\Models\Album::create($data);
-        return redirect()->route('bands.albums', $data['band_id'])->with('success', 'Álbum criado com sucesso!');
+        Album::create($data);
+
+        return redirect()->route('bands.albums', $data['band_id'])
+            ->with('success', 'Álbum criado com sucesso!');
     }
 
 
@@ -72,28 +77,40 @@ class AlbumController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($album->image) {
+
+            // apaga imagem antiga só se for do storage
+            if ($album->image && !str_starts_with($album->image, 'images/')) {
                 Storage::disk('public')->delete($album->image);
             }
+
             $data['image'] = $request->file('image')->store('albums', 'public');
+        } elseif (!$album->image) {
+            $data['image'] = self::DEFAULT_ALBUM_IMAGE;
         }
 
         $album->update($data);
-        return redirect()->route('bands.albums', $album->band_id)->with('success', 'Álbum atualizado com sucesso!');
+
+        return redirect()->route('bands.albums', $album->band_id)
+            ->with('success', 'Álbum atualizado com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Album $album)
     {
         if (Auth::user()->user_type != User::TYPE_ADMIN) {
             abort(403);
         }
-        if ($album->image){
+
+        if ($album->image && !str_starts_with($album->image, 'images/')) {
             Storage::disk('public')->delete($album->image);
         }
+
+        $bandId = $album->band_id;
         $album->delete();
-        return redirect()->route('bands.albums', $album->band_id)->with('success', 'Álbum apagado');
+
+        return redirect()->route('bands.albums', $bandId)
+            ->with('success', 'Álbum apagado');
     }
 }
